@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Latest Movies in English, Hindi and Local languages.</title>
+</head>
+<body>
+<h1>Welcome to BookMovieTickets.com</h1>
+<div id='container'></div>
+ 
+ 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+ 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/5.0.0/normalize.min.css">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://fb.me/react-15.0.1.js"></script>
+    <script src="https://fb.me/react-dom-15.0.1.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.8.23/browser.min.js"></script>
+ 	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+ 	<script src='https://npmcdn.com/react-router@2.4.0/umd/ReactRouter.min.js'></script>
+    <script type="text/babel">
+	
+var destination = document.querySelector("#container");
+
+var { Router,
+      Route,
+      IndexRoute,
+      IndexLink,
+      Link } = ReactRouter;
+
+var STUFFITEMS = [
+    { id: 1, title: "The Invisible Man", visible: false },
+    { id: 2, title: "Sholay", visible: false },
+    { id: 3, title: "Bridget Joans Diary", visible: false },
+    { id: 4, title: "The Dark Knight", visible: false },
+    { id: 5, title: "A Beautiful Mind", visible: false },
+];
+
+var cartItems = [
+    { id: 1, title: "The Invisible Man", visible: false },
+    { id: 2, title: "Sholay", visible: false },    
+];
+
+var App = React.createClass({  
+  render: function() {
+    return (
+      <div>
+        <h1>Book your movie tickets & more</h1>
+        <ul className="header">
+          <li><IndexLink to="/" activeClassName="active">Home</IndexLink></li>
+          <li><Link to="/stuffs" activeClassName="active">Movies</Link></li>
+          <li><Link to="/faq" activeClassName="active">FAQ</Link></li>
+		  <li><Link to="/cart" activeClassName="active">Shopping Cart</Link></li>
+		  <li><Link to="/feedback" activeClassName="active">Feedback</Link></li>
+        </ul>
+        <div className="content">
+          {this.props.children}
+        </div>
+      </div>
+    )
+  }
+});
+
+var Home = React.createClass({
+  render: function() {
+      return (
+        <div>
+          <h2>HELLO</h2>
+          <p>React is a front-end library developed by Facebook. 
+			It is used for handling the view layer for web and mobile apps. 
+			ReactJS allows us to create reusable UI components. 
+			It is currently one of the most popular JavaScript libraries and has a strong foundation and large community behind it.</p>
+  
+          <p>Learning React is incredibly difficult</p>
+
+		  <p>Featured Events</p>
+
+		  <p>Top 10 Movies</p>
+
+		  <p>Top 10 Movies/ Now Showing / Coming Soon / Exclusive</p>
+          
+          <p>A wrong link: <Link to="ding">Yes please</Link>.</p>
+        </div>
+      );
+    }
+});
+
+var Faq = React.createClass({
+  render: function() {
+      return (
+        <div>
+          <h2>GOT QUESTIONS?</h2>
+          <p>The easiest thing to check the <a href="https://github.com/ReactTraining/react-router">docs</a>.
+          </p>
+        </div>
+      );
+    }
+});
+
+var Cart = React.createClass({
+
+_renderCartMovies: function() {
+    return (
+        <div>          
+
+          <p>Added to the Cart..</p>
+          <ol>
+            {this.state.movieItem.map(stuff => (
+              <li><h4>{stuff.title}</h4></li>
+            ))}
+          </ol>
+        </div>
+    );
+  },
+
+getInitialState: function() {
+    return {movieItem: cartItems};
+  },
+
+  render: function() {
+      return (
+        <div>
+          { this.props.params.stuffId ? this.props.children : this._renderCartMovies() }
+        </div>
+      );
+    }
+});
+
+var Feedback = React.createClass({
+  render: function() {
+      return (
+        <div>
+          <h2>GOT QUESTIONS?</h2>
+          <p>The easiest thing to check the <a href="https://github.com/ReactTraining/react-router">docs</a>.
+          </p>
+        </div>
+      );
+    }
+});
+ 
+var Stuffs = React.createClass({
+  _renderStuffs: function() {
+    return (
+        <div>
+          <h2>Search Movie titles.</h2>
+
+		  <div>
+			<form>			
+		  	Select City : <nbsp/><nbsp/>
+			<label><input type="radio" value="option1" />Mumbai </label>
+			<label><input type="radio" value="option1" />Delhi </label>
+		    <label><input type="radio" value="option1" />Kolkata </label>			
+			</form>
+		  </div>
+
+		  <div>		
+		  Select Language : <nbsp/><nbsp/>
+		  <label><input type="radio" value="option1" />English </label>
+		  <label><input type="radio" value="option1" />Hindi </label>
+		  <label><input type="radio" value="option1" />Tamil </label>
+		  </div>
+
+		  <button onClick={this.activateLasers}> Get Your Movies </button>
+
+          <p>Top 5 Movies..</p>
+          <ol>
+            {this.state.stuffs.map(stuff => (
+              <li><Link to={`/stuffs/${stuff.id}`} activeClassName="active">{stuff.title}</Link></li>
+            ))}
+          </ol>
+        </div>
+    );
+  },
+
+  activateLasers: function(){
+	var self = this;
+    $.ajax({
+      url: "http://localhost:9000/movies"
+    }).then(function (data) {	
+      self.setState({movies: data});
+    });
+	
+  },
+
+  getInitialState: function() {
+    return {stuffs: STUFFITEMS, movies: []};
+  },
+
+  render: function() {
+      return (
+		<div>		
+        <div>
+          { this.props.params.stuffId ? this.props.children : this._renderStuffs() }
+        </div>
+		<div>
+		<MovieTable movies={this.state.movies}/>
+		</div>
+		</div>
+      );
+    }
+});
+
+var Stuff = React.createClass({
+  _findStuffById: function(id) {
+    return STUFFITEMS.filter((stuffItem) => stuffItem.id == id )[0];
+  },
+  
+  getInitialState: function() {
+    return {
+      stuffs: null
+    };
+  },
+  
+  componentWillMount: function() {
+    this.setState({
+      stuff: this._findStuffById(this.props.params.stuffId)
+    })
+  },
+  
+  render: function() {
+      const stuff = this.state.stuff;
+      return (
+        <div>
+          <h2>{stuff.title}</h2>
+          <p>My ID is {stuff.id}</p>
+          <p><Link to="/stuffs">Add to Cart. Return to Stuffs</Link></p>
+        </div>
+      );
+    }
+});
+
+var NoMatch = React.createClass({
+  render: function() {
+    return (
+      <div>
+        <h2>No route matches this URL.</h2>
+        <p>Return <Link to="/">home</Link></p>
+      </div>
+    );
+  }
+});
+
+var Movie = React.createClass({
+	
+	handleBuy: function(){
+		console.log('tried adding to array');
+		cartItems.push({ id: 2, title: "Sholay", visible: false });
+		console.log('tried adding to array............');
+	},
+
+  	render: function() {
+    	return (
+      		<tr>
+        	<td>{this.props.movie.name}</td>
+        	<td>{this.props.movie.day}</td>
+        	<td>{this.props.movie.description}</td>
+			<td><button className="btn btn-info" onClick={this.handleBuy}>Buy Ticket</button></td>
+      		</tr>);
+  		}
+});
+	
+var MovieTable = React.createClass({
+  	render: function() {
+    	var rows = [];
+    	this.props.movies.forEach(function(movie) {
+      		rows.push(<Movie movie={movie} />);
+    	});
+
+    return (
+      <div className="container">
+  		<table className="table table-striped">
+    	<thead>
+      	<tr>
+        	<th>Name</th>
+        	<th>Day</th>
+        	<th>Description</th>
+      	</tr>
+    	</thead>
+    	<tbody>{rows}</tbody>
+  		</table>
+		</div>);
+  	}
+});
+
+ReactDOM.render(
+  <Router>
+    <Route path="/" component={App}>
+      <IndexRoute component={Home} />
+      <Route path="/stuffs" component={Stuffs}>
+        <Route path=":stuffId" component={Stuff} />
+      </Route>
+      <Route path="faq" component={Faq} />
+	  <Route path="cart" component={Cart} />
+	  <Route path="feedback" component={Feedback} />
+      <Route path="*" component={NoMatch}/>
+    </Route>
+  </Router>,
+  destination
+);
+
+</script>
+	
+</body>
+</html>
