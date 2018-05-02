@@ -1,4 +1,4 @@
-package org.jeet;
+package org.upgrad;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;

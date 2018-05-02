@@ -1,8 +1,6 @@
-package org.jeet;
+package org.upgrad.model;
 
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
 @Entity
@@ -13,18 +11,38 @@ public class Movies {
     private String name;
     private String day;
     private String description;
+    private String released;
+    private int rating;
  
     public Movies() {}
  
-    public Movies(int id, String name, String day, String description) {
+    public Movies(int id, String name, String day, String description, String released, int rating) {
     	this.id = id;
         this.name = name;
         this.day = day;
         this.description = description;
+        this.released = released;
+        this.rating = rating;
     }
     
     
-    public int getId() {
+    public String getReleased() {
+		return released;
+	}
+
+	public void setReleased(String released) {
+		this.released = released;
+	}
+
+	public int getRating() {
+		return rating;
+	}
+
+	public void setRating(int rating) {
+		this.rating = rating;
+	}
+
+	public int getId() {
 		return id;
 	}
 
