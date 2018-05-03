@@ -22,6 +22,10 @@ public interface ShowsRepository extends CrudRepository<Shows, Integer> {
     @Query(nativeQuery = true,value="SELECT DISTINCT CITY FROM SHOWS ")
     List<String> findAllCity();
 
+    @Query(nativeQuery = true,value="SELECT  * FROM SHOWS WHERE SHOWID=?1 AND AVAILABILITY >= ?2 AND date>=NOW()  ")
+    String findTicketAvailability(int showId,int quantity);
 
+    @Query(nativeQuery = true,value="update shows set availability=availability-?2 where showid=?1; ")
+    List<String> findBooking(int showId,int quantity);
 }
 

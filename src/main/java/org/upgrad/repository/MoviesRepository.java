@@ -12,4 +12,11 @@ public interface MoviesRepository extends CrudRepository<Movies, Integer> {
 
     @Query(nativeQuery = true,value="SELECT * FROM MOVIES WHERE UPPER(NAME) = UPPER (?1) ")
     List<Movies> findMovieDetails(String name);
+
+    @Query(nativeQuery = true,value="SELECT * FROM MOVIES WHERE release_date > NOW(); ")
+    List<Movies> findUpcomingMovies();
+
+    @Query(nativeQuery = true,value="SELECT * FROM MOVIES WHERE release_date <= NOW(); ")
+    List<Movies> findReleasedMovies();
+
 }

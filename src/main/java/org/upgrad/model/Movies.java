@@ -2,6 +2,7 @@ package org.upgrad.model;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import java.util.Date;
 
 @Entity
 public class Movies {
@@ -13,16 +14,22 @@ public class Movies {
     private String description;
     private String released;
     private int rating;
- 
+	private Date release_date;
+
+
+
+
+
     public Movies() {}
  
-    public Movies(int id, String name, String day, String description, String released, int rating) {
+    public Movies(int id, String name, String day, String description, String released, int rating,Date releaseDate) {
     	this.id = id;
         this.name = name;
         this.day = day;
         this.description = description;
         this.released = released;
         this.rating = rating;
+        this.release_date=releaseDate;
     }
     
     
@@ -74,6 +81,14 @@ public class Movies {
 		this.description = description;
 	}
 
+
+	public Date getReleaseDate() {
+		return release_date;
+	}
+
+	public void setReleaseDate(Date releaseDate) {
+		this.release_date = releaseDate;
+	}
 	@Override
     public String toString() {
         return "Movies{" +

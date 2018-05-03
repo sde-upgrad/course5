@@ -1,7 +1,9 @@
 package org.upgrad.model;
 
+import javax.management.relation.Role;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import java.util.Set;
 
 @Entity
 public class Userentity {
@@ -10,7 +12,7 @@ public class Userentity {
 	private int userid;	
 	private String name;
 	private String password;
-	
+
 	public Userentity() {}
 	public Userentity(int userid, String name, String password) {
 		super();

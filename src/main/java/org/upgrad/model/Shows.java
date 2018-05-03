@@ -2,6 +2,7 @@ package org.upgrad.model;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import java.util.Date;
 
 @Entity
 public class Shows {
@@ -15,9 +16,13 @@ public class Shows {
 	private String description;
 	private int availability;
 	private String day;
+
+
+
+	private Date date;
 	
 	public Shows() {}
-	public Shows(int showid, String language, String city, String pvrcinema, String moviename, int availability, String description, String day) {
+	public Shows(int showid, String language, String city, String pvrcinema, String moviename, int availability, String description, String day,Date date) {
 		super();
 		this.showid = showid;
 		this.language = language;
@@ -27,6 +32,7 @@ public class Shows {
 		this.availability = availability;
 		this.description = description;
 		this.day = day;
+		this.date=date;
 	}
 	
 	
@@ -79,7 +85,13 @@ public class Shows {
 	public void setAvailability(int availability) {
 		this.availability = availability;
 	}
-	
+	public Date getDate() {
+		return date;
+	}
+
+	public void setDate(Date date) {
+		this.date = date;
+	}
 	
 
 }
