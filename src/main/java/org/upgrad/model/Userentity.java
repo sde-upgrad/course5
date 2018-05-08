@@ -1,5 +1,7 @@
 package org.upgrad.model;
 
+import springfox.documentation.annotations.Cacheable;
+
 import javax.management.relation.Role;
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -29,6 +31,7 @@ public class Userentity {
 		this.userid = userid;
 	}
 
+	@Cacheable("users")
 	public String getName() {
 		return name;
 	}

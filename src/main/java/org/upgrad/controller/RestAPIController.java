@@ -57,8 +57,13 @@ public class RestAPIController {
 	@RequestMapping("/api/findmoviebyid/")
 	public String findMoviesById(@RequestParam("id") int id)
 	{
-		String result = moviesRepository.findById(id).get().toString();
-		return result;
+		boolean result = moviesRepository.findById(id).isPresent();
+
+		System.out.println("the returned result is"+result);
+		if (result == false)
+			return "movie id doesnt exist";
+		String result2 = moviesRepository.findById(id).get().toString();
+		return result2;
 	}
 
 	@GetMapping("/api/alltheshows/")
@@ -79,7 +84,7 @@ public class RestAPIController {
 		return true;
 	}
 
-	@GetMapping("/api/signup/")
+	@PostMapping("/api/signup/")
 	public String PostRegistered(@RequestParam String uname,@RequestParam String password) {
 
 
@@ -101,21 +106,34 @@ public class RestAPIController {
 	}
 
 	@GetMapping("/api/bookmovieshowticket/")
-	public String getShowTicket(@RequestParam("showid")int showId,@RequestParam("quantity")int quantity){
-		String result= String.valueOf(showsRepository.findTicketAvailability(showId,quantity));
-		if ((result.equalsIgnoreCase("null")))
-			return "tickets not available";
+	public String getShowTicket(@RequestParam("username")String uname,@RequestParam("password")String password,@RequestParam("showid")int showId,@RequestParam("quantity")int quantity){
 
+		String userconfirm= String.valueOf(userEntityRepository.findUserExist(uname));
+
+		if (userconfirm.equalsIgnoreCase("null")) {
+			return "User does not exist kindly sign up";
+		}
+
+		String passwordByUser=String.valueOf(userEntityRepository.findUserPassword(uname));
+
+		if (!(password.equalsIgnoreCase(passwordByUser)))
+		{
+			return "Invalid credentials";
+		}
+
+		String result = String.valueOf(showsRepository.findTicketAvailability(showId, quantity));
+			if ((result.equalsIgnoreCase("null"))) {
+				return "tickets not available";
+		}
 		else{
 			showsRepository.findBooking(showId,quantity);
+			int userId=userEntityRepository.findUserIdByName(uname);
+			String moviename=showsRepository.findMovieNameViaShow(showId);
+			shoppingcartRepository.addCartDetails(userId,showId,quantity,moviename);
 			return quantity+" Tickets Booked for Show id " + showId;
 		}
 
 	}
-	//@GetMapping("/signup/")
-	//public List<Shows> getSignedUp(@RequestParam("username")String uname,){
-	//	return UserEntityRepository.findSignUpPossiblity();
-	//}
 
 	@GetMapping("/api/allcity/")
 	public List<String> getAllCities(){
@@ -124,13 +142,41 @@ public class RestAPIController {
 
 	@GetMapping("/api/moviedesc/")
 	public List<Movies> getMovieDesc(@RequestParam("name")String name){
+
 		return moviesRepository.findMovieDetails(name);
 	}
 
+	@GetMapping("/api/moviebyname/")
+	public List<Movies> getMovieByName(@RequestParam("name")String name){
 
-	@RequestMapping("/api/deleteashow/")
-	public void deleteAShowById(@RequestParam("id") int id){
-		showsRepository.deleteById(id);
+		return moviesRepository.findMovieDetails(name);
+	}
+
+	@PostMapping("/api/deleteashow/")
+	public String deleteAShowById(@RequestParam("username")String uname,@RequestParam("password")String password,@RequestParam("showid")int showId){
+
+
+		String userconfirm= String.valueOf(userEntityRepository.findUserExist(uname));
+
+
+		if (!(uname.equalsIgnoreCase("admin"))) {
+			return "Only Admin has rights to delete a show";
+		}
+
+		String passwordByUser=String.valueOf(userEntityRepository.findUserPassword(uname));
+
+		if (!(password.equalsIgnoreCase(passwordByUser)))
+		{
+			return "Invalid admin password";
+		}
+
+		boolean result = showsRepository.findById(showId).isPresent();
+		System.out.println("the returned result is"+result);
+		if (result == false)
+			return "show id doesnt exist";
+
+		showsRepository.deleteById(showId);
+		return "Showid "+showId+" suceessfully deleted by admin";
 	}
 
 
@@ -225,9 +271,10 @@ public class RestAPIController {
 	     shoppingcartRepository.saveAll(shoppingcartRepository.findAll());
     }
 
-	@GetMapping("/api/carts/all/")
-    public Iterable<Shoppingcart> showCarts(){
-		 return shoppingcartRepository.findAll();
+	@GetMapping("/api/cartbyuser/")
+    public List<Shoppingcart> showCarts(@RequestParam("userid")int uid){
+
+		 return shoppingcartRepository.findCartDetailsViaUserId(uid);
     }
 
 	@GetMapping("/api/loadcart/{data}")
@@ -274,8 +321,8 @@ public class RestAPIController {
 	}
 
 	@GetMapping("/api/allusers/")
-    public Iterable<Userentity> allUsersInfo(){
-		return userEntityRepository.findAll();
+    public List<String> allUsersInfo(){
+		return userEntityRepository.findAllUsers();
 	}
 
 

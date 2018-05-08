@@ -1,13 +1,17 @@
 package org.upgrad.model;
 
+import org.springframework.stereotype.Indexed;
+
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.Index;
+import javax.persistence.Table;
 import java.util.Date;
 
 @Entity
+@Table(name="shows",indexes = {@Index(name="showIndex",columnList = "showid",unique=true)})
 public class Shows {
-	
-	@Id
+@Id
 	private int showid;	
 	private String language;
 	private String city;
