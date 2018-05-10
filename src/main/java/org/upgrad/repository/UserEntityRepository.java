@@ -5,15 +5,14 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-import org.upgrad.model.Shows;
-import org.upgrad.model.Userentity;
+import org.upgrad.model.Users;
 
 import java.util.List;
 
 @Component
-public interface UserEntityRepository extends CrudRepository<Userentity, Integer>  {
+public interface UserEntityRepository extends CrudRepository<Users, Integer>  {
 
-    @Query(nativeQuery = true,value="SELECT  * FROM USERENTITY WHERE UPPER(USERNAME) = UPPER (?1) ")
+    @Query(nativeQuery = true,value="SELECT * FROM USERENTITY WHERE UPPER(USERNAME) = UPPER (?1) ")
     String findUserExist(String user1);
 
     @Query(nativeQuery = true,value="SELECT PASSWORD FROM USERENTITY WHERE UPPER(USERNAME)= UPPER(?1)")

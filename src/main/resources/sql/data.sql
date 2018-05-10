@@ -1,8 +1,8 @@
 insert into movies(id,name,day,description,released,rating) values(1,'Sholay','Monday','Classic','yes',1);
 insert into movies(id,name,day,description,released,rating) values(2,'Tomb Raider','Monday','Action','yes',1);
-insert into movies(id,name,day,description,released,rating) values(3,'Toby Maguire','Tuesday','Action','no',2);
-insert into movies(id,name,day,description,released,rating) values(4,'Infinity','Tuesday','Action','no',2);
-insert into movies(id,name,day,description,released,rating) values(5,'Alexander the movie','Tuesday','Action','no',2);
+insert into movies(id,name,day,description,released,rating) values(3,'Titanic','Tuesday','Drama','no',5);
+insert into movies(id,name,day,description,released,rating) values(4,'Infinity','Tuesday','Action','no',4);
+insert into movies(id,name,day,description,released,rating) values(5,'Troy','Tuesday','Action','no',3);
 
 insert into userentity(userid,name,password) values(1,'Rajeev','password');
 insert into userentity(userid,name,password) values(2,'Vishal','password');

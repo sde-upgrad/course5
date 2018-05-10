@@ -11,48 +11,34 @@ import java.util.Date;
 @Entity
 @Table(name="shows",indexes = {@Index(name="showIndex",columnList = "showid",unique=true)})
 public class Shows {
-@Id
+
+	@Id
 	private int showid;	
 	private String language;
 	private String city;
-	private String pvrcinema;
-	private String moviename;
-	private String description;
 	private int availability;
-	private String day;
-
-
-
+	int movieid;
 	private Date date;
 	
 	public Shows() {}
-	public Shows(int showid, String language, String city, String pvrcinema, String moviename, int availability, String description, String day,Date date) {
+	public Shows(int showid, String language, String city,int availability,int movieid,Date date) {
 		super();
 		this.showid = showid;
 		this.language = language;
 		this.city = city;
-		this.pvrcinema = pvrcinema;
-		this.moviename = moviename;
 		this.availability = availability;
-		this.description = description;
-		this.day = day;
+		this.movieid=movieid;
 		this.date=date;
 	}
-	
-	
-	
-	public String getDay() {
-		return day;
+
+	public int getMovieid() {
+		return movieid;
 	}
-	public void setDay(String day) {
-		this.day = day;
+
+	public void setMovieid(int movieid) {
+		this.movieid = movieid;
 	}
-	public String getDescription() {
-		return description;
-	}
-	public void setDescription(String description) {
-		this.description = description;
-	}
+
 	public int getShowid() {
 		return showid;
 	}
@@ -70,18 +56,6 @@ public class Shows {
 	}
 	public void setCity(String city) {
 		this.city = city;
-	}
-	public String getPvrcinema() {
-		return pvrcinema;
-	}
-	public void setPvrcinema(String pvrcinema) {
-		this.pvrcinema = pvrcinema;
-	}
-	public String getMoviename() {
-		return moviename;
-	}
-	public void setMoviename(String moviename) {
-		this.moviename = moviename;
 	}
 	public int getAvailability() {
 		return availability;

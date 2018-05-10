@@ -6,9 +6,9 @@ import org.springframework.cache.annotation.EnableCaching;
 
 @SpringBootApplication
 @EnableCaching
-public class JeetApplication {
+public class BookingApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(JeetApplication.class, args);
+		SpringApplication.run(BookingApplication.class, args);
 	}
 }

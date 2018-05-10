@@ -14,6 +14,7 @@ import org.upgrad.model.Movies;
 import org.upgrad.model.Shows;
 
 import javax.persistence.Cacheable;
+import java.util.Date;
 import java.util.List;
 
 @Component
@@ -29,13 +30,20 @@ public interface ShowsRepository extends CrudRepository<Shows, Integer> {
     @Query(nativeQuery = true,value="SELECT  MOVIENAME FROM SHOWS WHERE SHOWID=?1 ")
     String findMovieNameViaShow(int showId);
 
+
+
     @Query(nativeQuery = true,value="SELECT  * FROM SHOWS WHERE SHOWID=?1 AND AVAILABILITY >= ?2 AND date>=NOW()  ")
     String findTicketAvailability(int showId,int quantity);
-
 
     @Transactional
     @Modifying
     @Query(nativeQuery = true,value="UPDATE SHOWS SET AVAILABILITY=(AVAILABILITY-?2) WHERE SHOWID=?1")
     void findBooking(int showId,int quantity);
+
+    @Transactional
+    @Modifying
+    @Query(nativeQuery = true,value="INSERT INTO SHOWS VALUES (DEFAULT,?1,?2,?3,?4,?5)")
+    void addNewShows(int availability,String city,String Language,Date date1,int movieid);
+
 }
 

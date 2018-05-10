@@ -8,15 +8,15 @@ import javax.persistence.Id;
 import java.util.Set;
 
 @Entity
-public class Userentity {
+public class Users {
 
 	@Id
 	private int userid;	
 	private String name;
 	private String password;
 
-	public Userentity() {}
-	public Userentity(int userid, String name, String password) {
+	public Users() {}
+	public Users(int userid, String name, String password) {
 		super();
 		this.userid = userid;
 		this.name = name;

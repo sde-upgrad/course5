@@ -11,8 +11,7 @@ public class Shoppingcart {
 	private int userid;
 	private int showid;
 	private int numberoftickets;
-	private String cartstring;
-	
+
 	public Shoppingcart() {}
 	
 	public Shoppingcart(int cartid, int userid, int showid, int numberoftickets, String cartstring) {
@@ -21,21 +20,7 @@ public class Shoppingcart {
 		this.userid = userid;
 		this.showid = showid;
 		this.numberoftickets = numberoftickets;
-		this.cartstring = cartstring;
-	}
-	
-	
-
-	public String getCartstring() {
-		return cartstring;
-	}
-
-
-
-	public void setCartstring(String cartstring) {
-		this.cartstring = cartstring;
-	}
-
+		}
 
 
 	public int getCartid() {
@@ -69,8 +54,5 @@ public class Shoppingcart {
 	public void setNumberoftickets(int numberoftickets) {
 		this.numberoftickets = numberoftickets;
 	}
-	
-	
-	
 	
 }

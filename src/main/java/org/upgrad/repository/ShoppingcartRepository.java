@@ -13,10 +13,14 @@ public interface ShoppingcartRepository extends CrudRepository<Shoppingcart, Int
 
     @Transactional
     @Modifying
-    @Query(nativeQuery = true,value="INSERT INTO shoppingcart values (DEFAULT,?4,?3,?2,?1) ")
-    void addCartDetails(int userId,int showId,int quantity,String moviename);
+    @Query(nativeQuery = true,value="INSERT INTO shoppingcart values (DEFAULT,?3,?2,?1) ")
+    void addCartDetails(int userId,int showId,int quantity);
 
-    @Query(nativeQuery = true,value="SELECT  * FROM shoppingcart WHERE USERID=?1 ")
+    @Query(nativeQuery = true,value="SELECT  * FROM shoppingcart WHERE USERID = ?1 ")
+    String findUseridExist(String user1);
+
+
+    @Query(nativeQuery = true,value="SELECT * FROM shoppingcart WHERE USERID=?1 ")
     List<Shoppingcart> findCartDetailsViaUserId(int userId);
 
 }
