@@ -30,8 +30,6 @@ public interface ShowsRepository extends CrudRepository<Shows, Integer> {
     @Query(nativeQuery = true,value="SELECT  MOVIENAME FROM SHOWS WHERE SHOWID=?1 ")
     String findMovieNameViaShow(int showId);
 
-
-
     @Query(nativeQuery = true,value="SELECT  * FROM SHOWS WHERE SHOWID=?1 AND AVAILABILITY >= ?2 AND date>=NOW()  ")
     String findTicketAvailability(int showId,int quantity);
 

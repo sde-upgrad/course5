@@ -14,13 +14,19 @@ public class Shows {
 
 	@Id
 	private int showid;
+
 	private String language;
+
 	private String city;
+
 	private int availability;
-	int movieid;
+
+	private int movieid;
+
 	private Date date;
 	
 	public Shows() {}
+
 	public Shows(int showid, String language, String city,int availability,int movieid,Date date) {
 		super();
 		this.showid = showid;
@@ -42,27 +48,35 @@ public class Shows {
 	public int getShowid() {
 		return showid;
 	}
+
 	public void setShowid(int showid) {
 		this.showid = showid;
 	}
+
 	public String getLanguage() {
 		return language;
 	}
+
 	public void setLanguage(String language) {
 		this.language = language;
 	}
+
 	public String getCity() {
 		return city;
 	}
+
 	public void setCity(String city) {
 		this.city = city;
 	}
+
 	public int getAvailability() {
 		return availability;
 	}
+
 	public void setAvailability(int availability) {
 		this.availability = availability;
 	}
+
 	public Date getDate() {
 		return date;
 	}
@@ -70,6 +84,5 @@ public class Shows {
 	public void setDate(Date date) {
 		this.date = date;
 	}
-	
 
 }

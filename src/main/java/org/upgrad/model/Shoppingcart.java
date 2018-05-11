@@ -8,8 +8,11 @@ public class Shoppingcart {
 
 	@Id
 	private int cartid;
+
 	private int userid;
+
 	private int showid;
+
 	private int numberoftickets;
 
 	public Shoppingcart() {}
@@ -21,7 +24,6 @@ public class Shoppingcart {
 		this.showid = showid;
 		this.numberoftickets = numberoftickets;
 		}
-
 
 	public int getCartid() {
 		return cartid;
