@@ -13,7 +13,7 @@ public interface ShoppingcartRepository extends CrudRepository<Shoppingcart, Int
 
     @Transactional
     @Modifying
-    @Query(nativeQuery = true,value="INSERT INTO shoppingcart values (DEFAULT,?3,?2,?1) ")
+    @Query(nativeQuery = true,value="INSERT INTO shoppingcart values (DEFAULT,?1,?2,?3) ")
     void addCartDetails(int userId,int showId,int quantity);
 
     @Query(nativeQuery = true,value="SELECT  * FROM shoppingcart WHERE USERID = ?1 ")
@@ -22,4 +22,14 @@ public interface ShoppingcartRepository extends CrudRepository<Shoppingcart, Int
     @Query(nativeQuery = true,value="SELECT * FROM shoppingcart WHERE USERID=?1 ")
     List<Shoppingcart> findCartDetailsViaUserId(int userId);
 
+    @Query(nativeQuery = true,value="SELECT numberoftickets FROM shoppingcart WHERE USERID=?1 ")
+    int findQuantityViaUserId(int userId);
+
+    @Query(nativeQuery = true,value="SELECT showid FROM shoppingcart WHERE USERID=?1 ")
+    int findShowIdViaUserId(int userId);
+
+    @Transactional
+    @Modifying
+    @Query(nativeQuery = true,value="DELETE FROM shoppingcart WHERE USERID=?1 ")
+    void deleteEntryviaCartId(int userId);
 }

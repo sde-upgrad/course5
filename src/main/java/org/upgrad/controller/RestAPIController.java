@@ -89,7 +89,7 @@ public class RestAPIController {
     @PostMapping("/api/signup/")
     public String PostRegistered(@RequestParam String uname, @RequestParam String password) {
         String result = String.valueOf(userEntityRepository.findUserExist(uname));
-        if (!(result.equalsIgnoreCase("null"))) {
+        if ((result.equalsIgnoreCase("null"))) {
             userEntityRepository.addUserCredentials(uname, password);
             return uname + ", you successfully registered";
         } else {
@@ -108,6 +108,7 @@ public class RestAPIController {
             return "User does not exist. Kindly sign up";
         }
 
+
         String passwordByUser = String.valueOf(userEntityRepository.findUserPassword(uname));
 
         if (!(password.equalsIgnoreCase(passwordByUser))) {
@@ -118,10 +119,9 @@ public class RestAPIController {
         if ((result.equalsIgnoreCase("null"))) {
             return "tickets not available";
         } else {
-            showsRepository.findBooking(showId, quantity);
+
             int userId = userEntityRepository.findUserIdByName(uname);
-            //String moviename=showsRepository.findMovieNameViaShow(showId);
-            shoppingcartRepository.addCartDetails(userId, showId, quantity);
+            shoppingcartRepository.addCartDetails(quantity, showId, userId);
             return quantity + " Tickets added into cart " + showId;
         }
 
@@ -161,7 +161,13 @@ public class RestAPIController {
 
         List<Shoppingcart> cartList = shoppingcartRepository.findCartDetailsViaUserId(id);
         int total = cartList.size();
+        int showId = shoppingcartRepository.findShowIdViaUserId(id);
+        int quantity=shoppingcartRepository.findQuantityViaUserId(id);
 
+        showsRepository.findBooking(showId,quantity);
+        shoppingcartRepository.deleteEntryviaCartId(id);
+
+        System.out.println("hey all the value is"+toString().valueOf(cartList));
         return "Checked out" + total;
     }
 
@@ -172,10 +178,10 @@ public class RestAPIController {
 
 		String authResponse = adminAuthCheck(uname,password);
 		if(!authResponse.equals("Valid User")){
-			return authResponse;
+			return "Only Admin can add movies";
 		}
 
-        moviesRepository.addNewMovies(moviename, description, rating, releaseDate);
+        moviesRepository.addNewMovies(description,moviename, rating, releaseDate);
         return "movie added successfully";
     }
 
@@ -184,7 +190,7 @@ public class RestAPIController {
 
 		String authResponse = adminAuthCheck(uname,password);
 		if(!authResponse.equals("Valid User")){
-			return authResponse;
+			return "Only Admin can add new Shows";
 		}
 
         showsRepository.addNewShows(availability, city, language, date, movieid);
@@ -236,9 +242,10 @@ public class RestAPIController {
     }
 
     private String adminAuthCheck(String userName, String password){
-		String userConfirm = String.valueOf(userEntityRepository.findUserExist(userName));
-		if (!(userConfirm.equalsIgnoreCase("admin"))) {
-			return "Only Admin has rights to delete a show";
+		//String userConfirm = String.valueOf(userEntityRepository.findUserExist(userName));
+		if (!(userName.equalsIgnoreCase("admin"))) {
+		//	System.out.println("the value of userconfirm is"+userConfirm);
+		    return "Only Admin has rights to delete a show";
 		}
 
 		String passwordByUser = String.valueOf(userEntityRepository.findUserPassword(userName));

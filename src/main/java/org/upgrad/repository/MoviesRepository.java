@@ -24,7 +24,7 @@ public interface MoviesRepository extends CrudRepository<Movies, Integer> {
 
     @Transactional
     @Modifying
-    @Query(nativeQuery = true,value="INSERT INTO MOVIES VALUES (DEFAULT,?2,?1,?3,?4)")
+    @Query(nativeQuery = true,value="INSERT INTO MOVIES VALUES (DEFAULT,?1,?2,?3,?4)")
     void addNewMovies(String moviename,String description,int rating,Date date1);
 
     @Transactional
