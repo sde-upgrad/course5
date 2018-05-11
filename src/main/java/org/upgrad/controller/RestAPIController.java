@@ -17,251 +17,252 @@ import org.upgrad.model.Shoppingcart;
 import org.upgrad.model.Shows;
 import org.upgrad.model.Users;
 
+import javax.validation.constraints.Null;
+
 
 @RestController
 public class RestAPIController {
 
-	@Autowired
-	UserEntityRepository userEntityRepository;
+    @Autowired
+    UserEntityRepository userEntityRepository;
+
+    @Autowired
+    MoviesRepository moviesRepository;
+
+    @Autowired
+    ShowsRepository showsRepository;
+
+    @Autowired
+    ShoppingcartRepository shoppingcartRepository;
+
+
+    // Prior to login
+
+    // movies
+    @GetMapping("/api/allmovies/")
+    public Iterable<Movies> getAllMovies() {
+        return moviesRepository.findAll();
+    }
 
-	@Autowired
-	MoviesRepository moviesRepository;
+    @GetMapping("/api/upcomingmovies/")
+    public Iterable<Movies> getAllUpcomingMovies() {
+        return moviesRepository.findUpcomingMovies();
+    }
+
+    @GetMapping("/api/releasedmovies/")
+    public Iterable<Movies> getAllReleasedMovies() {
+        return moviesRepository.findReleasedMovies();
+    }
+
+    @GetMapping("/api/findmoviebyid/")
+    public String findMoviesById(@RequestParam("id") int id) {
+        boolean result = moviesRepository.findById(id).isPresent();
+        System.out.println("The returned result is" + result);
+        if (result == false)
+            return "movie id doesn't exist";
+        String result2 = moviesRepository.findById(id).get().toString();
+        return result2;
+    }
 
-	@Autowired
-	ShowsRepository showsRepository;
+    @GetMapping("/api/moviebyname/")
+    public List<Movies> getMovieByName(@RequestParam("name") String name) {
+        return moviesRepository.findMovieDetails(name);
+    }
 
-	@Autowired
-	ShoppingcartRepository shoppingcartRepository;
+    ///////////////////////////////////////////////////////////////
+    // shows
+    @GetMapping("/api/allshows/")
+    public Iterable<Shows> getAllShows() {
+        return showsRepository.findAll();
+    }
 
+    @GetMapping("/api/allshowsbycity/")
+    public List<Shows> getAllShowsByCity(@RequestParam("city") String city) {
+        return showsRepository.findAllShowsByCity(city);
+    }
 
-	// Prior to login
+    ////////////////////////////////////////////////////////////////
+    // cities
 
-	// movies
-	@GetMapping("/api/allmovies/")
-	public Iterable<Movies> getAllMovies() {
-		return moviesRepository.findAll();
-	}
+    @GetMapping("/api/allcities/")
+    public List<String> getAllCities() {
+        return showsRepository.findAllCity();
+    }
 
-	@GetMapping("/api/upcomingmovies/")
-	public Iterable<Movies> getAllUpcomingMovies() {
-		return moviesRepository.findUpcomingMovies();
-	}
-
-	@GetMapping("/api/releasedmovies/")
-	public Iterable<Movies> getAllReleasedMovies() {
-		return moviesRepository.findReleasedMovies();
-	}
 
-	@GetMapping("/api/findmoviebyid/")
-	public String findMoviesById(@RequestParam("id") int id) {
-		boolean result = moviesRepository.findById(id).isPresent();
-		System.out.println("The returned result is" + result);
-		if (result == false)
-			return "movie id doesn't exist";
-		String result2 = moviesRepository.findById(id).get().toString();
-		return result2;
-	}
+    /////////////////////////////////////////////////////////////////
+    // signup
+    @PostMapping("/api/signup/")
+    public String PostRegistered(@RequestParam String uname, @RequestParam String password) {
+        String result = String.valueOf(userEntityRepository.findUserExist(uname));
+        if (!(result.equalsIgnoreCase("null"))) {
+            userEntityRepository.addUserCredentials(uname, password);
+            return uname + ", you successfully registered";
+        } else {
+            return "user already exists";
+        }
+    }
 
-	@GetMapping("/api/moviebyname/")
-	public List<Movies> getMovieByName(@RequestParam("name") String name) {
-		return moviesRepository.findMovieDetails(name);
-	}
 
-	///////////////////////////////////////////////////////////////
-	// shows
-	@GetMapping("/api/allshows/")
-	public Iterable<Shows> getAllShows() {
-		return showsRepository.findAll();
-	}
+    // Post login -- reqs authentication
+    @GetMapping("/api/bookmovieshowticket/")
+    public String getShowTicket(@RequestParam("username") String uname, @RequestParam("password") String password, @RequestParam("showid") int showId, @RequestParam("quantity") int quantity) {
 
-	@GetMapping("/api/allshowsbycity/")
-	public List<Shows> getAllShowsByCity(@RequestParam("city") String city) {
-		return showsRepository.findAllShowsByCity(city);
-	}
+        String userconfirm = String.valueOf(userEntityRepository.findUserExist(uname));
 
-	////////////////////////////////////////////////////////////////
-	// cities
+        if (userconfirm.equalsIgnoreCase("null")) {
+            return "User does not exist. Kindly sign up";
+        }
 
-	@GetMapping("/api/allcities/")
-	public List<String> getAllCities() {
-		return showsRepository.findAllCity();
-	}
+        String passwordByUser = String.valueOf(userEntityRepository.findUserPassword(uname));
 
+        if (!(password.equalsIgnoreCase(passwordByUser))) {
+            return "Invalid credentials";
+        }
 
-	/////////////////////////////////////////////////////////////////
-	// signup
-	@PostMapping("/api/signup/")
-	public String PostRegistered(@RequestParam String uname, @RequestParam String password) {
-		String result = String.valueOf(userEntityRepository.findUserExist(uname));
-		if (!(result.equalsIgnoreCase("null"))) {
-			userEntityRepository.addUserCredentials(uname, password);
-			return uname + ", you successfully registered";
-		} else {
-			return "user already exists";
-		}
-	}
-	@GetMapping("/api/checkout/")
-	public String getShowTicket(@RequestParam("username")String uname,@RequestParam("password")String password){
+        String result = String.valueOf(showsRepository.findTicketAvailability(showId, quantity));
+        if ((result.equalsIgnoreCase("null"))) {
+            return "tickets not available";
+        } else {
+            showsRepository.findBooking(showId, quantity);
+            int userId = userEntityRepository.findUserIdByName(uname);
+            //String moviename=showsRepository.findMovieNameViaShow(showId);
+            shoppingcartRepository.addCartDetails(userId, showId, quantity);
+            return quantity + " Tickets added into cart " + showId;
+        }
 
+    }
 
-	String passwordByUser = String.valueOf(userEntityRepository.findUserPassword(uname));
 
-		if(!(password.equalsIgnoreCase(passwordByUser)))
+    @GetMapping("/api/cartdetails/")
+    public List<Shoppingcart> getAllCartDetails(@RequestParam String userName,@RequestParam String password) {
 
-	{
-		return "Invalid credentials";
-	}
+        int userId=userEntityRepository.findUserIdByName(userName);
 
-	int id=userEntityRepository.findUserIdByName(uname);
+        String passwordByUser = String.valueOf(userEntityRepository.findUserPassword(userName));
 
+        List<Shoppingcart> mine=new ArrayList<Shoppingcart>();
 
-	List<Shoppingcart> cartList=shoppingcartRepository.findCartDetailsViaUserId(id);
-	int total=cartList.size();
+        if (!(password.equalsIgnoreCase(passwordByUser))) {
+            mine.add(null);
+            return mine;
+        }
 
-	return "Checked out" + total;
+        return shoppingcartRepository.findCartDetailsViaUserId(userId);
+    }
 
-}
+    @GetMapping("/api/checkout/")
+    public String getShowTicket(@RequestParam("username") String uname, @RequestParam("password") String password) {
 
-	// Post login -- reqs authentication
-	@GetMapping("/api/bookmovieshowticket/")
-	public String getShowTicket(@RequestParam("username")String uname,@RequestParam("password")String password,@RequestParam("showid")int showId,@RequestParam("quantity")int quantity){
 
-		String userconfirm= String.valueOf(userEntityRepository.findUserExist(uname));
+        String passwordByUser = String.valueOf(userEntityRepository.findUserPassword(uname));
 
-		if (userconfirm.equalsIgnoreCase("null")) {
-			return "User does not exist. Kindly sign up";
-		}
+        if (!(password.equalsIgnoreCase(passwordByUser))) {
+            return "Invalid credentials";
+        }
 
-		String passwordByUser=String.valueOf(userEntityRepository.findUserPassword(uname));
+        int id = userEntityRepository.findUserIdByName(uname);
 
-		if (!(password.equalsIgnoreCase(passwordByUser))) {
-			return "Invalid credentials";
-		}
 
-		String result = String.valueOf(showsRepository.findTicketAvailability(showId, quantity));
-		if ((result.equalsIgnoreCase("null"))) {
-			return "tickets not available";
-		} else {
-			showsRepository.findBooking(showId,quantity);
-			int userId=userEntityRepository.findUserIdByName(uname);
-			//String moviename=showsRepository.findMovieNameViaShow(showId);
-			shoppingcartRepository.addCartDetails(userId,showId,quantity);
-			return quantity +" Tickets Booked for Show id " + showId;
-		}
 
-	}
+        List<Shoppingcart> cartList = shoppingcartRepository.findCartDetailsViaUserId(id);
+        int total = cartList.size();
 
-	@PutMapping("/api/addnewmovie/")
-	public String PostNewMovie(@RequestParam("username")String uname,@RequestParam("password")String password,@RequestParam("moviename")String moviename,@RequestParam("description")String description,@RequestParam("rating")int rating,@RequestParam("releasedate")Date releaseDate){
+        return "Checked out" + total;
+    }
 
-		if (!(uname.equalsIgnoreCase("admin"))) {
-			return "Only Admin has rights to delete a show";
-		}
 
+    // Admin
+    @PostMapping("/api/addnewmovie/")
+    public String PostNewMovie(@RequestParam("username") String uname, @RequestParam("password") String password, @RequestParam("moviename") String moviename, @RequestParam("description") String description, @RequestParam("rating") int rating, @RequestParam("releasedate") Date releaseDate) {
 
+        if (!(uname.equalsIgnoreCase("admin"))) {
+            return "Only Admin has rights to delete a show";
+        }
 
-		String passwordByUser=String.valueOf(userEntityRepository.findUserPassword(uname));
 
-		if (!(password.equalsIgnoreCase(passwordByUser))) {
-			return "Invalid credentials";
-		}
+        String passwordByUser = String.valueOf(userEntityRepository.findUserPassword(uname));
 
-		moviesRepository.addNewMovies(moviename,description,rating,releaseDate);
+        if (!(password.equalsIgnoreCase(passwordByUser))) {
+            return "Invalid credentials";
+        }
 
-		return "movie added successfully";
-		}
+        moviesRepository.addNewMovies(moviename, description, rating, releaseDate);
+        return "movie added successfully";
+    }
 
+    @PostMapping("/api/addnewshow/")
+    public String AddNewShow(@RequestParam("username") String uname, @RequestParam("password") String password, @RequestParam("availability") int availability, @RequestParam("city") String city, @RequestParam("language") String language, @RequestParam("date") Date date, @RequestParam("movie id") int movieid) {
 
-	@PutMapping("/api/addnewshow/")
-	public String AddNewShow(@RequestParam("username")String uname,@RequestParam("password")String password,@RequestParam("availability")int availability,@RequestParam("city")String city,@RequestParam("language")String language,@RequestParam("date")Date date,@RequestParam("movie id")int movieid){
+        if (!(uname.equalsIgnoreCase("admin"))) {
+            return "Only Admin has rights to add a show";
+        }
 
-		if (!(uname.equalsIgnoreCase("admin"))) {
-			return "Only Admin has rights to add a show";
-		}
+        String passwordByUser = String.valueOf(userEntityRepository.findUserPassword(uname));
 
+        if (!(password.equalsIgnoreCase(passwordByUser))) {
+            return "Invalid credentials";
+        }
 
+        showsRepository.addNewShows(availability, city, language, date, movieid);
+        return "show added successfully";
+    }
 
-		String passwordByUser=String.valueOf(userEntityRepository.findUserPassword(uname));
+    @DeleteMapping("/api/deletemovie/")
+    public String PostDeleteMovies(@RequestParam("username") String uname, @RequestParam("password") String password, @RequestParam("moviename") String moviename) {
 
-		if (!(password.equalsIgnoreCase(passwordByUser))) {
-			return "Invalid credentials";
-		}
 
-		showsRepository.addNewShows(availability,city,language,date,movieid);
+        if (!(uname.equalsIgnoreCase("admin"))) {
+            return "Only Admin has rights to delete a show";
+        }
 
-		return "show added successfully";
-	}
+        String passwordByUser = String.valueOf(userEntityRepository.findUserPassword(uname));
 
-	@DeleteMapping("/api/deletemovie/")
-	public String PostDeleteMovies(@RequestParam("username")String uname,@RequestParam("password")String password,@RequestParam("moviename")String moviename){
+        if (!(password.equalsIgnoreCase(passwordByUser))) {
+            return "Invalid credentials";
+        }
 
+        moviesRepository.deleteMoviesByName(moviename);
+        return "movie " + moviename + " deleted successfully";
+    }
 
-		if (!(uname.equalsIgnoreCase("admin"))) {
-			return "Only Admin has rights to delete a show";
-		}
+    @PostMapping("/api/deleteashow/")
+    public String deleteAShowById(@RequestParam("username") String uname, @RequestParam("password") String password, @RequestParam("showid") int showId) {
 
-		String passwordByUser=String.valueOf(userEntityRepository.findUserPassword(uname));
+        String userconfirm = String.valueOf(userEntityRepository.findUserExist(uname));
+        if (!(uname.equalsIgnoreCase("admin"))) {
+            return "Only Admin has rights to delete a show";
+        }
 
-		if (!(password.equalsIgnoreCase(passwordByUser))) {
-			return "Invalid credentials";
-		}
+        String passwordByUser = String.valueOf(userEntityRepository.findUserPassword(uname));
 
-		moviesRepository.deleteMoviesByName(moviename);
+        if (!(password.equalsIgnoreCase(passwordByUser))) {
+            return "Invalid admin password";
+        }
 
-		return "movie "+moviename+" deleted successfully";
-	}
+        boolean result = showsRepository.findById(showId).isPresent();
+        System.out.println("the returned result is" + result);
+        if (result == false)
+            return "show id doesn't exist";
 
+        showsRepository.deleteById(showId);
+        return "Showid " + showId + " successfully deleted by admin";
+    }
 
-	@GetMapping("/api/cartdetails/")
-	public List<Shoppingcart> getAllCartDetails(@RequestParam int userId) {
-		return shoppingcartRepository.findCartDetailsViaUserId(userId);
-	}
+    @GetMapping("/api/allusers/")
+    public List<String> allUsersInfo() {
+        return userEntityRepository.findAllUsers();
+    }
 
-
-
-	// Admin
-
-	@GetMapping("/api/allusers/")
-	public List<String> allUsersInfo() {
-		return userEntityRepository.findAllUsers();
-	}
-
-	@GetMapping("/api/userexist/")
-	public Boolean findUserExist(@RequestParam("uname") String name){
-		String result= String.valueOf(userEntityRepository.findUserExist(name));
-		if (result.equalsIgnoreCase("null")) {
-			return false;
-		} else {
-			return true;
-		}
-	}
-
-	@PostMapping("/api/deleteashow/")
-	public String deleteAShowById(@RequestParam("username")String uname,@RequestParam("password")String password,@RequestParam("showid")int showId){
-
-		String userconfirm= String.valueOf(userEntityRepository.findUserExist(uname));
-		if (!(uname.equalsIgnoreCase("admin"))) {
-			return "Only Admin has rights to delete a show";
-		}
-
-		String passwordByUser=String.valueOf(userEntityRepository.findUserPassword(uname));
-
-		if (!(password.equalsIgnoreCase(passwordByUser)))
-		{
-			return "Invalid admin password";
-		}
-
-		boolean result = showsRepository.findById(showId).isPresent();
-		System.out.println("the returned result is"+result);
-		if (result == false)
-			return "show id doesn't exist";
-
-		showsRepository.deleteById(showId);
-		return "Showid "+showId+" successfully deleted by admin";
-	}
-
-
-
+    @GetMapping("/api/userexist/")
+    public Boolean findUserExist(@RequestParam("uname") String name) {
+        String result = String.valueOf(userEntityRepository.findUserExist(name));
+        if (result.equalsIgnoreCase("null")) {
+            return false;
+        } else {
+            return true;
+        }
+    }
 //	@GetMapping("/api/shows/{data}")
 //	public List<Shows> shows(@RequestParam MultiValueMap<String, String> params){
 //		String language = params.get("AjaxID").get(0);

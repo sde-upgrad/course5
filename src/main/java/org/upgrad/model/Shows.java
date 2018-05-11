@@ -13,7 +13,7 @@ import java.util.Date;
 public class Shows {
 
 	@Id
-	private int showid;	
+	private int showid;
 	private String language;
 	private String city;
 	private int availability;

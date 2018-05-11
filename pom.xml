@@ -9,7 +9,7 @@
 	<packaging>jar</packaging>
 
 	<name>jeet</name>
-	<description>REST API with React</description>
+	<description>REST API</description>
 
 	<parent>
 		<groupId>org.springframework.boot</groupId>
@@ -50,13 +50,6 @@
 			<scope>compile</scope>
 		</dependency>
 
-
-
-		<dependency>
-            <groupId>com.h2database</groupId>
-            <artifactId>h2</artifactId>
-            <scope>runtime</scope>
-        </dependency>
 		<dependency>
 			<groupId>org.postgresql</groupId>
 			<artifactId>postgresql</artifactId>
@@ -77,6 +70,4 @@
 			</plugin>
 		</plugins>
 	</build>
-
-
 </project>
