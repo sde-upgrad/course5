@@ -19,7 +19,6 @@ public interface ShoppingcartRepository extends CrudRepository<Shoppingcart, Int
     @Query(nativeQuery = true,value="SELECT  * FROM shoppingcart WHERE USERID = ?1 ")
     String findUseridExist(String user1);
 
-
     @Query(nativeQuery = true,value="SELECT * FROM shoppingcart WHERE USERID=?1 ")
     List<Shoppingcart> findCartDetailsViaUserId(int userId);
 

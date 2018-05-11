@@ -12,10 +12,13 @@ public class Users {
 
 	@Id
 	private int userid;	
+
 	private String name;
+
 	private String password;
 
 	public Users() {}
+
 	public Users(int userid, String name, String password) {
 		super();
 		this.userid = userid;

@@ -9,14 +9,14 @@ public class Movies {
  
 	@Id
     private int id;
-    private String name;
-    private String description;
-    private int rating;
+
+	private String name;
+
+	private String description;
+
+	private int rating;
+
 	private Date release_date;
-
-
-
-
 
     public Movies() {}
  
@@ -27,7 +27,6 @@ public class Movies {
         this.rating = rating;
         this.release_date = releaseDate;
     }
-    
 
 	public int getRating() {
 		return rating;
@@ -53,7 +52,6 @@ public class Movies {
 		this.name = name;
 	}
 
-
 	public String getDescription() {
 		return description;
 	}
@@ -61,7 +59,6 @@ public class Movies {
 	public void setDescription(String description) {
 		this.description = description;
 	}
-
 
 	public Date getReleaseDate() {
 		return release_date;

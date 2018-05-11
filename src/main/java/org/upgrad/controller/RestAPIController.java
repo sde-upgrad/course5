@@ -3,10 +3,8 @@ package org.upgrad.controller;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
 import org.upgrad.repository.MoviesRepository;
 import org.upgrad.repository.ShoppingcartRepository;
@@ -15,10 +13,6 @@ import org.upgrad.repository.UserEntityRepository;
 import org.upgrad.model.Movies;
 import org.upgrad.model.Shoppingcart;
 import org.upgrad.model.Shows;
-import org.upgrad.model.Users;
-
-import javax.validation.constraints.Null;
-
 
 @RestController
 public class RestAPIController {
@@ -108,9 +102,9 @@ public class RestAPIController {
     @GetMapping("/api/bookmovieshowticket/")
     public String getShowTicket(@RequestParam("username") String uname, @RequestParam("password") String password, @RequestParam("showid") int showId, @RequestParam("quantity") int quantity) {
 
-        String userconfirm = String.valueOf(userEntityRepository.findUserExist(uname));
+        String userConfirm = String.valueOf(userEntityRepository.findUserExist(uname));
 
-        if (userconfirm.equalsIgnoreCase("null")) {
+        if (userConfirm.equalsIgnoreCase("null")) {
             return "User does not exist. Kindly sign up";
         }
 
@@ -176,16 +170,10 @@ public class RestAPIController {
     @PostMapping("/api/addnewmovie/")
     public String PostNewMovie(@RequestParam("username") String uname, @RequestParam("password") String password, @RequestParam("moviename") String moviename, @RequestParam("description") String description, @RequestParam("rating") int rating, @RequestParam("releasedate") Date releaseDate) {
 
-        if (!(uname.equalsIgnoreCase("admin"))) {
-            return "Only Admin has rights to delete a show";
-        }
-
-
-        String passwordByUser = String.valueOf(userEntityRepository.findUserPassword(uname));
-
-        if (!(password.equalsIgnoreCase(passwordByUser))) {
-            return "Invalid credentials";
-        }
+		String authResponse = adminAuthCheck(uname,password);
+		if(!authResponse.equals("Valid User")){
+			return authResponse;
+		}
 
         moviesRepository.addNewMovies(moviename, description, rating, releaseDate);
         return "movie added successfully";
@@ -194,15 +182,10 @@ public class RestAPIController {
     @PostMapping("/api/addnewshow/")
     public String AddNewShow(@RequestParam("username") String uname, @RequestParam("password") String password, @RequestParam("availability") int availability, @RequestParam("city") String city, @RequestParam("language") String language, @RequestParam("date") Date date, @RequestParam("movie id") int movieid) {
 
-        if (!(uname.equalsIgnoreCase("admin"))) {
-            return "Only Admin has rights to add a show";
-        }
-
-        String passwordByUser = String.valueOf(userEntityRepository.findUserPassword(uname));
-
-        if (!(password.equalsIgnoreCase(passwordByUser))) {
-            return "Invalid credentials";
-        }
+		String authResponse = adminAuthCheck(uname,password);
+		if(!authResponse.equals("Valid User")){
+			return authResponse;
+		}
 
         showsRepository.addNewShows(availability, city, language, date, movieid);
         return "show added successfully";
@@ -211,16 +194,10 @@ public class RestAPIController {
     @DeleteMapping("/api/deletemovie/")
     public String PostDeleteMovies(@RequestParam("username") String uname, @RequestParam("password") String password, @RequestParam("moviename") String moviename) {
 
-
-        if (!(uname.equalsIgnoreCase("admin"))) {
-            return "Only Admin has rights to delete a show";
-        }
-
-        String passwordByUser = String.valueOf(userEntityRepository.findUserPassword(uname));
-
-        if (!(password.equalsIgnoreCase(passwordByUser))) {
-            return "Invalid credentials";
-        }
+		String authResponse = adminAuthCheck(uname,password);
+		if(!authResponse.equals("Valid User")){
+			return authResponse;
+		}
 
         moviesRepository.deleteMoviesByName(moviename);
         return "movie " + moviename + " deleted successfully";
@@ -229,16 +206,10 @@ public class RestAPIController {
     @PostMapping("/api/deleteashow/")
     public String deleteAShowById(@RequestParam("username") String uname, @RequestParam("password") String password, @RequestParam("showid") int showId) {
 
-        String userconfirm = String.valueOf(userEntityRepository.findUserExist(uname));
-        if (!(uname.equalsIgnoreCase("admin"))) {
-            return "Only Admin has rights to delete a show";
-        }
-
-        String passwordByUser = String.valueOf(userEntityRepository.findUserPassword(uname));
-
-        if (!(password.equalsIgnoreCase(passwordByUser))) {
-            return "Invalid admin password";
-        }
+		String authResponse = adminAuthCheck(uname,password);
+        if(!authResponse.equals("Valid User")){
+        	return authResponse;
+		}
 
         boolean result = showsRepository.findById(showId).isPresent();
         System.out.println("the returned result is" + result);
@@ -263,6 +234,28 @@ public class RestAPIController {
             return true;
         }
     }
+
+    private String adminAuthCheck(String userName, String password){
+		String userConfirm = String.valueOf(userEntityRepository.findUserExist(userName));
+		if (!(userConfirm.equalsIgnoreCase("admin"))) {
+			return "Only Admin has rights to delete a show";
+		}
+
+		String passwordByUser = String.valueOf(userEntityRepository.findUserPassword(userName));
+
+		if (!(password.equalsIgnoreCase(passwordByUser))) {
+			return "Invalid admin password";
+		}
+
+		return "Valid User";
+	}
+
+	private String authCheck(String userName, String password){
+
+    	//TODO logic for auth check for reducing duplication
+    	return null;
+	}
+
 //	@GetMapping("/api/shows/{data}")
 //	public List<Shows> shows(@RequestParam MultiValueMap<String, String> params){
 //		String language = params.get("AjaxID").get(0);
